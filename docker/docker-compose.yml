@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: apmc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: apmc_db
+      POSTGRES_USER: apmc_user
+      POSTGRES_PASSWORD: apmc_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - apmc_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apmc_user -d apmc_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  apmc_postgres_data:
