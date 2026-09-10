@@ -49,15 +49,12 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+# SQLite is used for the current development foundation.
+# We can migrate to PostgreSQL later without changing the API architecture.
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "apmc_db"),
-        "USER": os.getenv("POSTGRES_USER", "apmc_user"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "change-me"),
-        "HOST": os.getenv("POSTGRES_HOST", "127.0.0.1"),
-        "PORT": os.getenv("POSTGRES_PORT", "5432"),
-        "CONN_MAX_AGE": 60,
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
