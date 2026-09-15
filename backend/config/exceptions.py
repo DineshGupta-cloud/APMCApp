@@ -6,9 +6,13 @@ def api_exception_handler(exc, context):
     if response is None:
         return response
 
-    detail = response.data.get("detail") if isinstance(response.data, dict) else None
-    response.data = {
-        "status": response.status_code,
-        "detail": detail or "Request failed.",
-    }
+    if isinstance(response.data, dict):
+        detail = response.data.get("detail")
+        if detail:
+            response.data = {"status": response.status_code, "detail": detail}
+        else:
+            response.data = {"status": response.status_code, "errors": response.data}
+    else:
+        response.data = {"status": response.status_code, "detail": response.data}
+
     return response
