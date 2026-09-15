@@ -1,0 +1,28 @@
+{
+  "name": "apmc-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "axios": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-router-dom": "latest",
+    "tailwindcss": "latest",
+    "@tailwindcss/vite": "latest"
+  },
+  "devDependencies": {
+    "vite": "latest",
+    "eslint": "latest",
+    "@eslint/js": "latest",
+    "eslint-plugin-react-hooks": "latest",
+    "eslint-plugin-react-refresh": "latest"
+  }
+}
