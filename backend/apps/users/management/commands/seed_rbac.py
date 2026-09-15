@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.users.models import Role
+from apps.users.models import Permission, Role, RolePermission
 
 
 DEFAULT_ROLES = (
@@ -19,12 +19,113 @@ DEFAULT_ROLES = (
 )
 
 
+DEFAULT_PERMISSIONS = (
+    (
+        "DASHBOARD_VIEW",
+        "View Dashboard",
+        "DASHBOARD",
+        "VIEW",
+        "View role-specific application dashboard.",
+    ),
+    (
+        "USER_VIEW",
+        "View Users",
+        "USERS",
+        "VIEW",
+        "View user accounts and basic user information.",
+    ),
+    (
+        "USER_CREATE",
+        "Create Users",
+        "USERS",
+        "CREATE",
+        "Create application user accounts.",
+    ),
+    (
+        "USER_UPDATE",
+        "Update Users",
+        "USERS",
+        "UPDATE",
+        "Update application user information.",
+    ),
+    (
+        "USER_DEACTIVATE",
+        "Deactivate Users",
+        "USERS",
+        "DEACTIVATE",
+        "Deactivate or reactivate application users.",
+    ),
+    (
+        "ROLE_VIEW",
+        "View Roles",
+        "ROLES",
+        "VIEW",
+        "View roles and their assigned permissions.",
+    ),
+    (
+        "ROLE_MANAGE",
+        "Manage Roles",
+        "ROLES",
+        "MANAGE",
+        "Create, update, activate, or deactivate roles.",
+    ),
+    (
+        "PERMISSION_VIEW",
+        "View Permissions",
+        "PERMISSIONS",
+        "VIEW",
+        "View available permissions and role mappings.",
+    ),
+)
+
+
+ROLE_PERMISSION_CODES = {
+    Role.SUPER_ADMIN: {code for code, *_ in DEFAULT_PERMISSIONS},
+    Role.ADMIN: {code for code, *_ in DEFAULT_PERMISSIONS},
+    Role.APMC_ADMIN: {
+        "DASHBOARD_VIEW",
+        "USER_VIEW",
+        "USER_CREATE",
+        "USER_UPDATE",
+        "ROLE_VIEW",
+    },
+    Role.EMPLOYEE: {
+        "DASHBOARD_VIEW",
+        "USER_VIEW",
+    },
+    Role.VIEWER: {
+        "DASHBOARD_VIEW",
+    },
+    Role.TRADER: {
+        "DASHBOARD_VIEW",
+    },
+    Role.FARMER: {
+        "DASHBOARD_VIEW",
+    },
+    Role.COMMISSION_AGENT: {
+        "DASHBOARD_VIEW",
+    },
+}
+
+
 class Command(BaseCommand):
-    help = "Create or update the default APMC RBAC roles."
+    help = "Create or update the default APMC RBAC roles, permissions, and mappings."
 
     def handle(self, *args, **options):
-        created_count = 0
-        updated_count = 0
+        roles = self._seed_roles()
+        permissions = self._seed_permissions()
+        mapping_count = self._seed_role_permissions(roles, permissions)
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                "RBAC seed completed: "
+                f"roles={len(roles)}, permissions={len(permissions)}, "
+                f"role_permissions={mapping_count}."
+            )
+        )
+
+    def _seed_roles(self):
+        roles = {}
 
         for code, name, description in DEFAULT_ROLES:
             role, created = Role.objects.update_or_create(
@@ -35,16 +136,54 @@ class Command(BaseCommand):
                     "is_active": True,
                 },
             )
+            roles[code] = role
 
-            if created:
-                created_count += 1
-                self.stdout.write(self.style.SUCCESS(f"Created role: {role.code}"))
-            else:
-                updated_count += 1
-                self.stdout.write(f"Verified role: {role.code}")
+            message = "Created" if created else "Verified"
+            self.stdout.write(f"{message} role: {role.code}")
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"RBAC roles ready. Created={created_count}, Updated={updated_count}."
+        return roles
+
+    def _seed_permissions(self):
+        permissions = {}
+
+        for code, name, module, action, description in DEFAULT_PERMISSIONS:
+            permission, created = Permission.objects.update_or_create(
+                code=code,
+                defaults={
+                    "name": name,
+                    "module": module,
+                    "action": action,
+                    "description": description,
+                    "is_active": True,
+                },
             )
-        )
+            permissions[code] = permission
+
+            message = "Created" if created else "Verified"
+            self.stdout.write(f"{message} permission: {permission.code}")
+
+        return permissions
+
+    def _seed_role_permissions(self, roles, permissions):
+        mapping_count = 0
+
+        for role_code, permission_codes in ROLE_PERMISSION_CODES.items():
+            role = roles[role_code]
+
+            for permission_code in permission_codes:
+                permission = permissions[permission_code]
+                RolePermission.objects.update_or_create(
+                    role=role,
+                    permission=permission,
+                    defaults={"is_active": True},
+                )
+                mapping_count += 1
+
+        # Disable stale mappings that are no longer part of the default matrix.
+        for role_code, role in roles.items():
+            active_permission_codes = ROLE_PERMISSION_CODES[role_code]
+            RolePermission.objects.filter(role=role).exclude(
+                permission__code__in=active_permission_codes
+            ).update(is_active=False)
+
+        return mapping_count
