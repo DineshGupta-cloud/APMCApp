@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import Permission, Role, RolePermission, User, UserRole
+from .models import AuditLog, Permission, Role, RolePermission, User, UserRole
 
 
 @admin.register(User)
@@ -11,10 +11,10 @@ class CustomUserAdmin(UserAdmin):
     list_display = ("email", "first_name", "last_name", "is_staff", "is_active")
     search_fields = ("email", "first_name", "last_name")
     fieldsets = (
-        (None, {"fields": ("email", "password")} ),
-        ("Personal info", {"fields": ("first_name", "last_name")} ),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")} ),
-        ("Important dates", {"fields": ("last_login", "date_joined", "updated_at")} ),
+        (None, {"fields": ("email", "password")}),
+        ("Personal info", {"fields": ("first_name", "last_name")}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Important dates", {"fields": ("last_login", "date_joined", "updated_at")}),
     )
     add_fieldsets = (
         (None, {
@@ -50,3 +50,14 @@ class UserRoleAdmin(admin.ModelAdmin):
     list_display = ("user", "role", "is_active", "created_at")
     list_filter = ("is_active", "role")
     search_fields = ("user__email", "role__code")
+
+
+@admin.register(AuditLog)
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = ("created_at", "action", "actor", "target_type", "target_id", "ip_address")
+    list_filter = ("action", "target_type")
+    search_fields = ("actor__email", "target_type", "target_id")
+    readonly_fields = (
+        "actor", "action", "target_type", "target_id", "ip_address", "metadata", "created_at"
+    )
+    ordering = ("-created_at",)
