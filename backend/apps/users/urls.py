@@ -1,5 +1,15 @@
 from django.urls import path
 
+from .rbac_management_views import (
+    AssignPermissionView,
+    AssignRoleView,
+    PermissionListView,
+    RemoveRoleView,
+    RoleListView,
+    UserDetailView,
+    UserListCreateView,
+    UserRoleListView,
+)
 from .rbac_views import RBACProtectedTestView, RBACPublicTestView
 from .views import LoginView, LogoutView, MeView, RefreshView
 
@@ -12,4 +22,12 @@ urlpatterns = [
     path("me/", MeView.as_view(), name="me"),
     path("rbac/public-test/", RBACPublicTestView.as_view(), name="rbac-public-test"),
     path("rbac/protected-test/", RBACProtectedTestView.as_view(), name="rbac-protected-test"),
+    path("rbac/users/", UserListCreateView.as_view(), name="rbac-users"),
+    path("rbac/users/<int:user_id>/", UserDetailView.as_view(), name="rbac-user-detail"),
+    path("rbac/users/<int:user_id>/roles/", UserRoleListView.as_view(), name="rbac-user-roles"),
+    path("rbac/users/roles/assign/", AssignRoleView.as_view(), name="rbac-assign-role"),
+    path("rbac/users/<int:user_id>/roles/<int:role_id>/", RemoveRoleView.as_view(), name="rbac-remove-role"),
+    path("rbac/roles/", RoleListView.as_view(), name="rbac-roles"),
+    path("rbac/permissions/", PermissionListView.as_view(), name="rbac-permissions"),
+    path("rbac/roles/permissions/assign/", AssignPermissionView.as_view(), name="rbac-assign-permission"),
 ]
