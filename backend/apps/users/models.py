@@ -141,3 +141,52 @@ class UserRole(models.Model):
 
     def __str__(self):
         return f"{self.user.email} -> {self.role.code}"
+
+
+class AuditLog(models.Model):
+    LOGIN = "LOGIN"
+    LOGOUT = "LOGOUT"
+    USER_CREATE = "USER_CREATE"
+    USER_ACTIVATE = "USER_ACTIVATE"
+    USER_DEACTIVATE = "USER_DEACTIVATE"
+    ROLE_ASSIGN = "ROLE_ASSIGN"
+    ROLE_REMOVE = "ROLE_REMOVE"
+    PERMISSION_ASSIGN = "PERMISSION_ASSIGN"
+    PERMISSION_REMOVE = "PERMISSION_REMOVE"
+
+    ACTIONS = (
+        (LOGIN, "Login"),
+        (LOGOUT, "Logout"),
+        (USER_CREATE, "User Created"),
+        (USER_ACTIVATE, "User Activated"),
+        (USER_DEACTIVATE, "User Deactivated"),
+        (ROLE_ASSIGN, "Role Assigned"),
+        (ROLE_REMOVE, "Role Removed"),
+        (PERMISSION_ASSIGN, "Permission Assigned"),
+        (PERMISSION_REMOVE, "Permission Removed"),
+    )
+
+    actor = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="audit_logs",
+    )
+    action = models.CharField(max_length=50, choices=ACTIONS, db_index=True)
+    target_type = models.CharField(max_length=100, blank=True)
+    target_id = models.CharField(max_length=100, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    metadata = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+        indexes = [
+            models.Index(fields=("action", "created_at")),
+            models.Index(fields=("actor", "created_at")),
+            models.Index(fields=("target_type", "target_id")),
+        ]
+
+    def __str__(self):
+        return f"{self.action} - {self.target_type}:{self.target_id}"
