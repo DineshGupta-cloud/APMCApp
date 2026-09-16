@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Users from './pages/Users'
 import Roles from './pages/Roles'
+import Permissions from './pages/Permissions'
 
 function Home() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
             <Route path="/roles" element={<Roles />} />
+            <Route path="/permissions" element={<Permissions />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
