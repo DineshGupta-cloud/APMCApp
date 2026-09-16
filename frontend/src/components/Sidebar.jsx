@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { PERMISSIONS, hasAnyPermission, hasPermission } from '../utils/permissions'
+import { PERMISSIONS, hasAnyPermission } from '../utils/permissions'
 
 const items = [
   { label: 'Dashboard', to: '/dashboard', permissions: [PERMISSIONS.DASHBOARD_VIEW] },
@@ -8,7 +8,7 @@ const items = [
   { label: 'Permissions', to: '/permissions', permissions: [PERMISSIONS.PERMISSION_VIEW, PERMISSIONS.ROLE_MANAGE] },
 ]
 
-export default function Sidebar({ open, onClose }) {
+export default function Sidebar({ open, onClose, user }) {
   return (
     <>
       <div className={`fixed inset-0 z-30 bg-black/40 lg:hidden ${open ? 'block' : 'hidden'}`} onClick={onClose} />
@@ -21,7 +21,7 @@ export default function Sidebar({ open, onClose }) {
         </div>
         <nav className="space-y-1 p-4">
           {items.map((item) => (
-            hasAnyPermission({ ...item, permissions: item.permissions }, item.permissions) ? (
+            hasAnyPermission(user, item.permissions) ? (
               <NavLink key={item.to} to={item.to} onClick={onClose} className={({ isActive }) => `block rounded-lg px-4 py-3 text-sm font-medium transition ${isActive ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
                 {item.label}
               </NavLink>
