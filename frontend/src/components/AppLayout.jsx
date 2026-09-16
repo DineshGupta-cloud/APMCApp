@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Sidebar from './Sidebar'
 
-export default function AppLayout({ children }) {
+export default function AppLayout() {
   const { user, logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -27,7 +28,9 @@ export default function AppLayout({ children }) {
             </button>
           </div>
         </header>
-        <main className="p-4 sm:p-6">{children}</main>
+        <main className="p-4 sm:p-6">
+          <Outlet />
+        </main>
       </div>
     </div>
   )
