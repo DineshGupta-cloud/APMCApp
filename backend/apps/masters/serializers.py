@@ -6,7 +6,7 @@ from .models import Branch, Commodity, Farmer, Market, Yard
 class MarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
-        fields = "__all__"
+        fields = ["id", "code", "name", "description", "location", "is_active", "created_at", "updated_at"]
         read_only_fields = ("id", "created_at", "updated_at")
 
 
@@ -15,7 +15,7 @@ class YardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Yard
-        fields = [*"__all__", "market_name"]
+        fields = ["id", "code", "name", "description", "is_active", "created_at", "updated_at", "market", "location", "market_name"]
         read_only_fields = ("id", "created_at", "updated_at", "market_name")
 
 
@@ -24,14 +24,14 @@ class BranchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Branch
-        fields = [*"__all__", "market_name"]
+        fields = ["id", "code", "name", "description", "is_active", "created_at", "updated_at", "market", "address", "phone", "market_name"]
         read_only_fields = ("id", "created_at", "updated_at", "market_name")
 
 
 class CommoditySerializer(serializers.ModelSerializer):
     class Meta:
         model = Commodity
-        fields = "__all__"
+        fields = ["id", "code", "name", "description", "is_active", "created_at", "updated_at", "unit", "category"]
         read_only_fields = ("id", "created_at", "updated_at")
 
 
@@ -41,7 +41,11 @@ class FarmerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Farmer
-        fields = [*"__all__", "market_name", "full_name"]
+        fields = [
+            "id", "farmer_code", "first_name", "last_name", "full_name", "mobile", "email",
+            "address", "village", "district", "state", "pincode", "land_area", "land_area_unit",
+            "market", "market_name", "is_active", "created_at", "updated_at",
+        ]
         read_only_fields = ("id", "created_at", "updated_at", "market_name", "full_name")
 
     def get_full_name(self, obj):
