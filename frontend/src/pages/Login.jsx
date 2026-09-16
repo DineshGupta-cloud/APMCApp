@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 
 export default function Login() {
-  const { isAuthenticated, login } = useAuth()
+  const { isAuthenticated, loading, login } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
@@ -14,6 +14,19 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
+  // Never render the login form while an existing session is being restored.
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white">
+        <div className="text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-emerald-600" />
+          <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">Restoring your session...</p>
+        </div>
+      </main>
+    )
+  }
+
+  // Authenticated users can never stay on or return to the login screen.
   if (isAuthenticated) return <Navigate to="/dashboard" replace />
 
   const submit = async (event) => {
