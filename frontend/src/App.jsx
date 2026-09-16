@@ -4,6 +4,7 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import AppLayout from './components/AppLayout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import Users from './pages/Users'
 
 function Home() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/users" element={<Users />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
