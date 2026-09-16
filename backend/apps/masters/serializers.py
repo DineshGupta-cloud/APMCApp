@@ -15,7 +15,7 @@ class YardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Yard
-        fields = "__all__" + "market_name",
+        fields = [*"__all__", "market_name"]
         read_only_fields = ("id", "created_at", "updated_at", "market_name")
 
 
@@ -24,7 +24,7 @@ class BranchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Branch
-        fields = "__all__" + "market_name",
+        fields = [*"__all__", "market_name"]
         read_only_fields = ("id", "created_at", "updated_at", "market_name")
 
 
@@ -41,7 +41,7 @@ class FarmerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Farmer
-        fields = "__all__" + ("market_name", "full_name")
+        fields = [*"__all__", "market_name", "full_name"]
         read_only_fields = ("id", "created_at", "updated_at", "market_name", "full_name")
 
     def get_full_name(self, obj):
