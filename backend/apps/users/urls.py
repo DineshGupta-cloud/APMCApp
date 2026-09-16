@@ -14,6 +14,7 @@ from .rbac_management_views import (
     UserListCreateView,
     UserRoleListView,
 )
+from .role_management_views import RoleManagementDetailView, RoleManagementListView
 from .rbac_views import RBACProtectedTestView, RBACPublicTestView
 from .views import LoginView, LogoutView, MeView, RefreshView
 
@@ -33,7 +34,8 @@ urlpatterns = [
     path("rbac/users/<int:user_id>/roles/<int:role_id>/", RemoveRoleView.as_view(), name="rbac-remove-role"),
     path("rbac/users/<int:user_id>/deactivate/", UserActivationView.as_view(), {"activate": False}, name="rbac-user-deactivate"),
     path("rbac/users/<int:user_id>/activate/", UserActivationView.as_view(), {"activate": True}, name="rbac-user-activate"),
-    path("rbac/roles/", RoleListView.as_view(), name="rbac-roles"),
+    path("rbac/roles/", RoleManagementListView.as_view(), name="rbac-roles"),
+    path("rbac/roles/<int:role_id>/", RoleManagementDetailView.as_view(), name="rbac-role-detail"),
     path("rbac/roles/<int:role_id>/permissions/", RolePermissionListView.as_view(), name="rbac-role-permissions"),
     path("rbac/permissions/", PermissionListView.as_view(), name="rbac-permissions"),
     path("rbac/roles/permissions/assign/", AssignPermissionView.as_view(), name="rbac-assign-permission"),

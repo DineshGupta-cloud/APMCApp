@@ -5,6 +5,7 @@ import AppLayout from './components/AppLayout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Users from './pages/Users'
+import Roles from './pages/Roles'
 
 function Home() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/roles" element={<Roles />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
